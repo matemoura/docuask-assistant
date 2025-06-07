@@ -4,7 +4,8 @@ from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_ollama import Ollama, OllamaEmbeddings
+from langchain_community.llms import Ollama
+from langchain_community.embeddings import OllamaEmbeddings
 
 
 def get_retriever_from_file(uploaded_file):
@@ -13,6 +14,7 @@ def get_retriever_from_file(uploaded_file):
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
     
+    file_path = os.path.join(temp_dir, uploaded_file.name)
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
