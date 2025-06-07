@@ -1,22 +1,27 @@
 import streamlit as st
 import pandas as pd
+from backend.database import get_obsolete_documents
 
-st.set_page_config(page_title="Documentos Obsoletos", layout="wide")
+if "authentication_status" not in st.session_state or not st.session_state["authentication_status"]:
+    st.warning("Você precisa fazer login para acessar esta página.")
+    st.stop()
 
 st.title("🗂️ Visualizar Documentos Obsoletos")
 
-mock_data = {
-    "Nome do Documento": ["IT-001", "FORM-05"],
-    "Setor": ["Manutenção", "Qualidade"],
-    "Revisão": [0, 2],
-    "Status": ["Obsoleto", "Obsoleto"],
-    "Data": ["2024-01-10", "2024-03-15"]
-}
-df = pd.DataFrame(mock_data)
+obsolete_docs = get_obsolete_documents()
 
-st.info("Aqui são listados todos os documentos que já foram substituídos por uma nova revisão.")
+if not obsolete_docs:
+    st.info("Nenhum documento obsoleto encontrado.")
+else:
+    df = pd.DataFrame(obsolete_docs)
+    df = df.rename(columns={
+        'name': 'Nome do Documento', 'sector': 'Setor', 
+        'revision': 'Revisão', 'created_at': 'Data de Criação'
+    })
+    
+    st.info("Aqui são listados todos os documentos que já foram substituídos por uma nova revisão.")
 
-setores = df["Setor"].unique()
-for setor in setores:
-    with st.expander(f"▼ Setor: {setor}"):
-        st.dataframe(df[df["Setor"] == setor])
+    setores = df["Setor"].unique()
+    for setor in setores:
+        with st.expander(f"▼ Setor: {setor}"):
+            st.dataframe(df[df["Setor"] == setor])
