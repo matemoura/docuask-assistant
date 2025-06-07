@@ -6,3 +6,5 @@ pypdf
 python-docx
 chromadb
 faiss-cpu
+streamlit-authenticator
+pandas
